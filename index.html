@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách câu Tiếng Việt - Tiếng Anh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .sentence {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .sentence:hover {
+            background-color: #e0e0e0;
+        }
+        .translation {
+            max-height: 0;
+            opacity: 0;
+            padding: 0 12px;
+            background-color: #e6f3fa; /* Light blue background */
+            margin: 5px 0 10px;
+            border-radius: 6px;
+            border-left: 4px solid #2196F3; /* Blue left border */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
+            line-height: 1.6;
+        }
+        .translation.show {
+            max-height: 300px; /* Increased for longer content */
+            opacity: 1;
+            padding: 12px;
+        }
+        .translation strong {
+            color: #1565C0; /* Darker blue for labels */
+            font-weight: 600;
+        }
+        .translation .phonetics {
+            font-family: 'Courier New', Courier, monospace; /* Monospace for phonetics */
+            color: #333;
+            margin-top: 8px;
+        }
+        .refresh-button {
+            padding: 8px 16px;
+            margin: 10px 0;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .refresh-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Danh sách câu Tiếng Việt - Tiếng Anh</h1>
+    <button class="refresh-button" onclick="refreshSentences()">Làm mới</button>
+    <div id="sentenceList"></div>
+
+    <script>
+        // Hard-coded data
+        const sentences = [
+            { vietnamese: "Xin chào", english: "Hello", phonetics: ["sin chow", "sin chào"] },
+            { vietnamese: "Cảm ơn", english: "Thank you", phonetics: ["kahm uhn", "cảm ơn"] },
+            { vietnamese: "Tạm biệt", english: "Goodbye", phonetics: ["tam byet", "tạm biệt"] },
+            { vietnamese: "Tôi yêu bạn", english: "I love you", phonetics: ["<strong>toy</strong> yeu ban", "tôi yêu bạn"] },
+            { vietnamese: "Bạn khỏe không?", english: "How are you?", phonetics: ["ban kwe khong", "bạn khỏe không"] },
+            // Add more sentences here as needed
+        ];
+
+        // Shuffle function (Fisher-Yates algorithm)
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Create a shuffled copy of sentences
+        let shuffledSentences = shuffle([...sentences]);
+
+        // Function to display all sentences
+        function displaySentences() {
+            const list = document.getElementById('sentenceList');
+            list.innerHTML = '';
+            shuffledSentences.forEach((sentence, index) => {
+                const sentenceDiv = document.createElement('div');
+                sentenceDiv.className = 'sentence';
+                sentenceDiv.dataset.index = index;
+                sentenceDiv.innerHTML = sentence.vietnamese;
+
+                const translationDiv = document.createElement('div');
+                translationDiv.className = 'translation';
+                translationDiv.id = `translation-${index}`;
+                translationDiv.innerHTML = `
+                    <strong>Tiếng Anh:</strong> ${sentence.english}<br>
+                    <strong>Phiên âm:</strong><div class="phonetics">${sentence.phonetics.map(p => `- ${p}`).join('<br>')}</div>
+                `;
+                list.appendChild(sentenceDiv);
+                list.appendChild(translationDiv);
+            });
+        }
+
+        // Refresh sentences order
+        function refreshSentences() {
+            shuffledSentences = shuffle([...sentences]);
+            displaySentences();
+        }
+
+        // Event delegation for click events
+        document.getElementById('sentenceList').addEventListener('click', (event) => {
+            const sentenceDiv = event.target.closest('.sentence');
+            if (sentenceDiv) {
+                const index = sentenceDiv.dataset.index;
+                const translation = document.getElementById(`translation-${index}`);
+                translation.classList.toggle('show');
+            }
+        });
+
+        // Initial display
+        displaySentences();
+    </script>
+</body>
+</html>
